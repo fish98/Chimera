@@ -1,0 +1,76 @@
+{
+  "attack_id": "gen_attack_12",
+  "scenario_title": "Repeated Unintentional Data Access and Request Due to Excessive Curiosity",
+  "type": "unintentional access",
+  "who": {
+    "role": "unintentional user",
+    "origin": "internal",
+    "privilege_level": "all"
+  },
+  "what": {
+    "action": "unintentional access to intellectual property",
+    "assets": ["confidential documents", "source code", "internal reports"]
+  },
+  "when": {
+    "frequency": "recurrent",
+    "time_window": "work hours"
+  },
+  "where": ["application"],
+  "why": {
+    "motivation": "personal",
+    "details": "Due to excessive curiosity and limited awareness of access boundaries, the user repeatedly accessed or requested confidential data unrelated to their job responsibilities."
+  },
+  "how": [
+    {
+      "step": 1,
+      "description": "Used internal search functions to locate sensitive documents or project names unrelated to assigned tasks.",
+      "tactic": "Discovery",
+      "technique_id": ["T1083", "T1213"],
+      "technique_name": ["File and Directory Discovery", "Data from Information Repositories"],
+      "sub_technique": "-",
+      "procedure": "User browses or searches within document management or file-repository systems for files outside their responsibility area, driven by curiosity rather than explicit malicious intent.",
+      "observable_evidence": [
+        "Search queries by user for project names/data sets outside work scope",
+        "Access to directories or document types not typical for user role",
+        "High number of view/open events for sensitive documents by a user not usually accessing them"
+      ],
+      "detection_data_sources": ["Search Logs", "File Access Logs", "Repository Audit Logs"],
+      "impact": "Unauthorized access to sensitive data may lead to inadvertent data exposure or violation of confidentiality, even without intent to exfiltrate."
+    },
+    {
+      "step": 2,
+      "description": "Sent emails or messages requesting access to files with restricted permissions out of curiosity.",
+      "tactic": "Initial Access",
+      "technique_id": ["T1199"],
+      "technique_name": ["Trusted Relationship"],
+      "sub_technique": "-",
+      "procedure": "User leverages interpersonal relationships or contacts within the organization to ask for access to restricted files or shares, not necessarily maliciously but outside standard workflow.",
+      "observable_evidence": [
+        "Email or chat message requesting permission for files not needed for assigned tasks",
+        "Permission approval logs for accesses requested without business justification",
+        "Change-control tickets or request logs for access that are unusual for the role"
+      ],
+      "detection_data_sources": ["Email Logs", "Ticket/Access Request Logs", "Access Approval Logs"],
+      "impact": "Grants of inappropriate access increase potential for later exposure or misuse of the data."
+    },
+    {
+      "step": 3,
+      "description": "Repeatedly accessed and opened multiple internal reports or code files through internal applications without explicit business justification.",
+      "tactic": "Collection",
+      "technique_id": ["T1005", "T1213"],
+      "technique_name": ["Data from Local System", "Data from Information Repositories"],
+      "sub_technique": "-",
+      "procedure": "User uses their legitimate access to browse, open or download confined reports, code files or internal documents repeatedly, even though they are not part of the user’s role or tasks.",
+      "observable_evidence": [
+        "Frequent file opens/downloads of sensitive documents by the same user over time",
+        "Access logs showing user retrieving files they have not accessed before or beyond scope",
+        "Large volumes of accessed data from restricted folders by general user"
+      ],
+      "detection_data_sources": ["File Operation Logs", "Repository Access Logs", "Download Logs"],
+      "impact": "Accumulated access to sensitive data may create risk of exposure, accidental leak, or misuse, even if no immediate exfiltration is evident."
+    }
+  ],
+  "reference": [
+    "https://www.syteca.com/en/blog/insider-threat-techniques"
+  ]
+}

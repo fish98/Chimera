@@ -1,0 +1,116 @@
+{
+  "attack_id": "multi_attack_2",
+  "scenario_title": "Miscellaneous Insider Espionage via Privilege Abuse",
+  "type": "data exfiltration",
+  "who": {
+    "role": "traitor",
+    "origin": "internal",
+    "privilege_level": "all"
+  },
+  "what": {
+    "action": "theft of classified intelligence",
+    "assets": [
+      "internal company reports",
+      "company employee lists"
+    ]
+  },
+  "when": {
+    "frequency": "recurrent",
+    "time_window": ["work hours", "after hours"]
+  },
+  "where": [
+    "operating system",
+    "internal database",
+    "network"
+  ],
+  "why": {
+    "motivation": ["financial", "personal"],
+    "details": "The insider leaked sensitive internal data to external competitors or entities in exchange for monetary gain and to influence strategic business dynamics in their favor."
+  },
+  "how": [
+    {
+      "step": 1,
+      "description": "Abused privileged internal access to query and collect classified and sensitive company files.",
+      "tactic": "Collection",
+      "technique_id": ["T1039", "T1083"],
+      "technique_name": ["Data from Network Shared Drive", "File and Directory Discovery"],
+      "sub_technique": "-",
+      "procedure": "Insider with elevated privileges queries shared drives, document repositories and internal DBs to identify and gather classified company reports and employee lists before exfiltration preparation.",
+      "observable_evidence": [
+        "Large file reads from secure directories by privileged account",
+        "Directory listing and file discovery activity in restricted folders",
+        "Access to internal database tables containing employee lists outside normal workflow"
+      ],
+      "detection_data_sources": ["File Operation Logs", "Database Query Logs", "Audit Logs"],
+      "impact": "Acquisition of high-value assets increases risk of strategic loss and competitive disadvantage for the organization."
+    },
+    {
+      "step": 2,
+      "description": "Installed unauthorized software and used password-cracking / keylogging tools to obtain colleagues’ credentials, expanding access footprint.",
+      "tactic": "Credential Access",
+      "technique_id": ["T1555", "T1110.004", "T1214"],
+      "technique_name": ["Credentials from Password Stores", "Credential Stuffing", "Exploitation of User Execution"],
+      "sub_technique": "-",
+      "procedure": "Insider deploys tools (e.g., keyloggers, credential dumpers) or uses stolen/password-reused credentials to compromise additional accounts and escalate privileges across the network.",
+      "observable_evidence": [
+        "Installation of keylogger or credential dumping tool on endpoint",
+        "Multiple login failures or credential reuse events on internal accounts",
+        "Use of compromised credentials to access systems previously inaccessible to the user"
+      ],
+      "detection_data_sources": ["Endpoint Process Logs", "Authentication Logs", "Credential Store Access Logs"],
+      "impact": "Broader credential compromise facilitates lateral movement, persistent access and deeper infiltration into sensitive environments."
+    },
+    {
+      "step": 3,
+      "description": "Copied sensitive documents to removable media and concealed them using file hiding/encryption techniques.",
+      "tactic": "Exfiltration",
+      "technique_id": ["T1052", "T1560"],
+      "technique_name": ["Exfiltration Over Physical Medium", "Archive Collected Data"],
+      "sub_technique": "T1560.001",
+      "procedure": "Insider uses elevated privileges to copy classified documents onto encrypted portable storage or hidden partitions, and may schedule transfer or hide data before external delivery.",
+      "observable_evidence": [
+        "USB insertion events followed by large‐scale file copy operations",
+        "Creation of encrypted archive/ZIP file on system containing sensitive filenames",
+        "Transfer of hidden or encrypted files from internal system to external medium"
+      ],
+      "detection_data_sources": ["File Operation Logs", "USB Device Logs", "Archive Creation Logs"],
+      "impact": "Physical exfiltration of classified data leads to information loss, regulatory compliance risk and damage to organizational reputation."
+    },
+    {
+      "step": 4,
+      "description": "Browsed external competitor websites and job postings to initiate covert contact or evaluate value of stolen data.",
+      "tactic": "Reconnaissance",
+      "technique_id": ["T1591", "T1592"],
+      "technique_name": ["Gather Victim Org. Information", "Search Open Technical Databases"],
+      "sub_technique": "-",
+      "procedure": "Insider uses internal access to research external entities (competitors, recruiters) and prepare for data monetization or espionage, potentially contacting them covertly through hidden channels.",
+      "observable_evidence": [
+        "Web traffic to competitor domains and job-posting sites from insider workstation",
+        "Use of anonymization tools or private browser sessions to connect externally",
+        "Email or chat communication with external entities discussing value or sale of data"
+      ],
+      "detection_data_sources": ["Web Proxy Logs", "Browser History Logs", "Outbound Email Logs"],
+      "impact": "Pre-exfiltration preparation with external adversaries increases strategic threat and long-term risk."
+    },
+    {
+      "step": 5,
+      "description": "Monitored internal communication systems to detect any investigation indicators referencing their own activity.",
+      "tactic": "Defense Evasion",
+      "technique_id": ["T1070", "T1218"],
+      "technique_name": ["Indicator Removal on Host", " signed Binary Proxy Execution"],
+      "sub_technique": "T1070.004",
+      "procedure": "Insider monitors internal audit or security logs, uses tools to delete or alter entries that could link activity to them, and may use proxy execution or signed binaries to evade detection.",
+      "observable_evidence": [
+        "Deletion or alteration of audit/security log entries shortly after high-privilege access events",
+        "Use of unsigned or rarely seen binaries executed via proxy mechanisms",
+        "Use of monitoring tools or scripts reading internal comms or logs unexpectedly"
+      ],
+      "detection_data_sources": ["Audit Log Deletion Events", "Endpoint Process Logs", "System Event Logs"],
+      "impact": "Reduced detectability allows prolonged undetected activity, increasing cumulative damage and dwell time."
+    }
+  ],
+  "reference": [
+    "https://www.justice.gov/usao-edtn/pr/phd-chemist-sentenced-168-months-conspiracy-steal-traded-secrets-economic-espionage",
+    "https://en.wikipedia.org/wiki/Robert_Hanssen"
+  ]
+}

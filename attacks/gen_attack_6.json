@@ -1,0 +1,94 @@
+{
+  "attack_id": "gen_attack_6",
+  "scenario_title": "Single-Event APT-Style Internal Attack via Malware Planting and System Monitoring",
+  "type": "sabotage",
+  "who": {
+    "role": "traitor",
+    "origin": "internal/external",
+    "privilege_level": "system administrator or privileged user"
+  },
+  "what": {
+    "action": "sabotage",
+    "assets": ["operating system integrity", "operating systems", "sensitive data"]
+  },
+  "when": {
+    "frequency": "single",
+    "time_window": "after hours"
+  },
+  "where": ["operating system"],
+  "why": {
+    "motivation": ["financial", "personal"],
+    "details": "The insider used advanced malware and persistence techniques to monitor the system covertly, seeking either revenge or external payment by exfiltrating valuable business or operational data."
+  },
+  "how": [
+    {
+      "step": 1,
+      "description": "Copied a disguised malware executable to a system directory using command line.",
+      "tactic": "Execution",
+      "technique_id": ["T1059", "T1105"],
+      "technique_name": ["Command and Scripting Interpreter", "Ingress Tool Transfer"],
+      "sub_technique": "-",
+      "procedure": "Privileged user uses admin shell or elevated privileges to transfer a malicious executable into a core OS directory by command-line, bypassing normal deployment processes.",
+      "observable_evidence": [
+        "Command-line invocation (e.g., cmd.exe, bash) copying executable to system directory",
+        "Unusual file placement in OS directory that isn’t part of standard deployment",
+        "Files with suspicious names or hidden attributes in system folders"
+      ],
+      "detection_data_sources": ["Process Logs", "File Operation Logs", "Command History Logs"],
+      "impact": "Initial execution of malware allows adversary to establish foothold and further control activities."
+    },
+    {
+      "step": 2,
+      "description": "Modified system registry or startup script to ensure malware persistence after reboot.",
+      "tactic": "Persistence",
+      "technique_id": ["T1547", "T1053"],
+      "technique_name": ["Boot or Logon Autostart Execution", "Scheduled Task/Job"],
+      "sub_technique": "-",
+      "procedure": "Malware or insider modifies registry keys, startup script, or scheduler settings so that malicious code runs automatically after reboot or user login, ensuring long-term presence.",
+      "observable_evidence": [
+        "New entries in Run/RunOnce registry keys pointing to unknown executable",
+        "Creation or modification of scheduled task outside normal IT deploy windows",
+        "Service or process starts automatically tagged as suspicious or non-standard"
+      ],
+      "detection_data_sources": ["Registry Change Logs", "Scheduled Task Logs", "System Startup Logs"],
+      "impact": "Persistent presence on host enables covert monitoring and further sabotage without repeated manual action."
+    },
+    {
+      "step": 3,
+      "description": "Used command line tools to connect to an unauthorized external server, establishing a hidden remote control channel.",
+      "tactic": "Command and Control",
+      "technique_id": ["T1071", "T1219"],
+      "technique_name": ["Application Layer Protocol", "Remote Access Tool"],
+      "sub_technique": "-",
+      "procedure": "Malware or insider uses a command-line tool or embedded agent to initiate a covert outbound connection to an attacker-controlled server, establishing a remote-control channel for later data exfiltration or monitoring.",
+      "observable_evidence": [
+        "Outbound network connection to non-standard external IP/port after hours",
+        "Use of uncommon protocol or port for external connection (e.g., non-443 HTTPS, custom port)",
+        "Remote session established from host to external server under privileged account"
+      ],
+      "detection_data_sources": ["Network Traffic Logs", "Firewall Logs", "Process Network Connection Logs"],
+      "impact": "Remote control channel allows adversary to issue commands, exfiltrate data, or manipulate host undetected."
+    },
+    {
+      "step": 4,
+      "description": "Used malware to monitor file access patterns and system logs for sensitive data leakage opportunities.",
+      "tactic": "Collection",
+      "technique_id": ["T1005", "T1083"],
+      "technique_name": ["Data from Local System", "File and Directory Discovery"],
+      "sub_technique": "-",
+      "procedure": "The malware agent monitors file access and system logs to identify sensitive data (e.g., intellectual property, credential stores) and prepares files for exfiltration or further manipulation.",
+      "observable_evidence": [
+        "High frequency file read operations by malicious process on sensitive directories",
+        "Access to log files and directories by processes not standard for role",
+        "Monitoring or scanning of directories containing IP, credentials or backups"
+      ],
+      "detection_data_sources": ["File Operation Logs", "Process Monitoring Logs", "System Log Access Logs"],
+      "impact": "Adversary gains intelligence about available data and sets up for significant sabotage or exfiltration operations."
+    }
+  ],
+  "reference": [
+    "https://insights.sei.cmu.edu/documents/302/2012_019_001_52399.pdf",
+    "https://www.securonix.com/blog/insider-threat-case-study-misaligned-saboteur/",
+    "https://www.crowdstrike.com/cybersecurity-101/advanced-persistent-threat-apt/"
+  ]
+}

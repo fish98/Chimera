@@ -1,0 +1,74 @@
+{
+  "attack_id": "gen_attack_1",
+  "scenario_title": "Privilege escalation for IP theft",
+  "type": "privilege escalation",
+  "who": {
+    "role": "traitor",
+    "level": "all"
+  },
+  "what": "theft of intellectual property",
+  "when": {
+    "frequency": "recurrent",
+    "time_window": "after hours"
+  },
+  "where": ["operating system", "network", "application"],
+  "why": {
+    "motivation": "financial",
+    "details": "Seeks financial gain by stealing valuable company IP."
+  },
+  "how": [
+    {
+      "step": 1,
+      "description": "Requests higher permissions via email to admins.",
+      "tactic": "Initial Access",
+      "technique_id": ["T1199", "T1078"],
+      "technique_name": ["Trusted Relationship", "Valid Accounts"],
+      "sub_technique": "-",
+      "procedure": "Insider leverages or fabricates a trusted relationship (or uses valid credentials) to obtain elevated permissions from administrators via email request.",
+      "observable_evidence": [
+        "Unusual permission-request emails outside normal workflow",
+        "Grant of admin privileges in system logs without justified reason",
+        "Access granted outside normal change-control process"
+      ],
+      "detection_data_sources": ["Emails", "System Logs", "Access Change Logs"],
+      "impact": "Adversary obtains elevated access enabling access to high-value IP and systems."
+    },
+    {
+      "step": 2,
+      "description": "Solicits colleagues to gain access to key data and systems.",
+      "tactic": "Privilege Escalation",
+      "technique_id": ["T1548", "T1566"],
+      "technique_name": ["Abuse Elevation Control Mechanism", "Phishing"],
+      "sub_technique": "-",
+      "procedure": "Insider uses social engineering to trick colleagues or administrators into delegating access or installing/configuring permissions, thereby gaining elevated privileges.",
+      "observable_evidence": [
+        "Emails or messages soliciting credential sharing or access delegation",
+        "Requests for account elevation or role change outside standard process",
+        "Temporary sessions with elevated rights on systems"
+      ],
+      "detection_data_sources": ["Emails", "Logon/Event Logs", "Privilege Change Logs"],
+      "impact": "Elevated privileges allow lateral movement or deeper access to IP/data stores."
+    },
+    {
+      "step": 3,
+      "description": "Accesses sensitive project files and system credentials, then copies data for exfiltration.",
+      "tactic": "Exfiltration",
+      "technique_id": ["T1041", "T1052"],
+      "technique_name": ["Exfiltration Over C2 Channel", "Exfiltration Over Physical Medium"],
+      "sub_technique": "T1052.001",
+      "procedure": "Insider with escalated rights downloads or copies intellectual-property files and system credentials, transfers to removable or external media/cloud, and prepares for later removal.",
+      "observable_evidence": [
+        "Large volume of file read/copy operations by an elevated account",
+        "Use of removable media or external cloud folder access by insider account",
+        "Off-hours file access or unusual destination addresses"
+      ],
+      "detection_data_sources": ["File Operation Logs", "System Logs", "Network/Traffic Logs"],
+      "impact": "Loss of intellectual property, financial or competitive damage to organization."
+    }
+  ],
+  "reference": [
+    "https://www.exabeam.com/explainers/insider-threats/insider-threats/",
+    "https://www.exabeam.com/explainers/insider-threats/insider-threat-examples/",
+    "https://www.vectra.ai/topics/insider-threats"
+  ]
+}

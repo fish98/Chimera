@@ -1,0 +1,76 @@
+{
+  "attack_id": "gen_attack_2",
+  "scenario_title": "Single-Event IP Theft by Disgruntled Engineer Incite Defection",
+  "type": "data exfiltration",
+  "who": {
+    "role": "traitor",
+    "level": "all"
+  },
+  "what": {
+    "action": "theft of intellectual property",
+    "assets": ["source code", "design documents", "admin password"]
+  },
+  "when": {
+    "frequency": "single",
+    "time_window": "work hours"
+  },
+  "where": ["operating system", "network", "application"],
+  "why": {
+    "motivation": ["financial", "personal"],
+    "details": "The insider aimed to use stolen intellectual property to create a competing product, driven by financial ambition and personal dissatisfaction with the employer."
+  },
+  "how": [
+    {
+      "step": 1,
+      "description": "Recruited colleagues who are willing to assist in accessing and downloading sensitive data.",
+      "tactic": "Initial Access",
+      "technique_id": ["T1199", "T1566"],
+      "technique_name": ["Trusted Relationship", "Phishing"],
+      "sub_technique": "-",
+      "procedure": "Insider cultivates relationships or manipulates colleagues to obtain access or credentials via social engineering or peer coercion.",
+      "observable_evidence": [
+        "Unusual internal communications soliciting help for access",
+        "Colleagues providing credentials or delegating rights",
+        "Access requests deviating from normal workflows"
+      ],
+      "detection_data_sources": ["Emails", "Chat logs", "System Logs"],
+      "impact": "Acquires foothold through trusted internal collaborator, facilitating subsequent higher-privilege actions."
+    },
+    {
+      "step": 2,
+      "description": "Used company email to request admin-level access to project resources under the pretense of project continuity.",
+      "tactic": "Privilege Escalation",
+      "technique_id": ["T1548", "T1078"],
+      "technique_name": ["Abuse Elevation Control Mechanism", "Valid Accounts"],
+      "sub_technique": "-",
+      "procedure": "Insider leverages existing or manipulated credentials, or persuades administrators to grant elevated permissions using misleading justification.",
+      "observable_evidence": [
+        "Email requests for elevated access citing project needs",
+        "Granting of admin or high privileged accounts not following standard change control",
+        "Time-of-access unusual for the role/request"
+      ],
+      "detection_data_sources": ["Emails", "Privilege Change Logs", "System Logs"],
+      "impact": "Elevated privileges allow deeper access to sensitive repositories and data, increasing risk of large scale exfiltration."
+    },
+    {
+      "step": 3,
+      "description": "Downloaded confidential files from internal systems and copied them to a private external storage device.",
+      "tactic": "Exfiltration",
+      "technique_id": ["T1052", "T1041"],
+      "technique_name": ["Exfiltration Over Physical Medium", "Exfiltration Over C2 Channel"],
+      "sub_technique": "T1052.001",
+      "procedure": "Insider uses elevated rights to locate and download high-value IP/data and transfers it via removable media or personal external storage/cloud, often in a single event operation.",
+      "observable_evidence": [
+        "Large volume file read/copy operations from sensitive directories",
+        "USB device insertion or external storage access events",
+        "Outbound data transfers to personal cloud or non-corporate domains"
+      ],
+      "detection_data_sources": ["File Operation Logs", "System Logs", "Network/Traffic Logs"],
+      "impact": "Significant intellectual property loss, competitive disadvantage, legal/regulatory exposure for the organization."
+    }
+  ],
+  "reference": [
+    "https://www.digitalguardian.com/blog/former-google-uber-engineer-hit-trade-secret-theft-charges?utm_source=chatgpt.com",
+    "https://www.fbi.gov/news/stories/two-guilty-in-theft-of-trade-secrets-from-ge-072920"
+  ]
+}

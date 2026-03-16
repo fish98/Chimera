@@ -1,0 +1,81 @@
+{
+  "attack_id": "gen_attack_3",
+  "scenario_title": "Single-Event IP Theft via Email Exfiltration",
+  "type": "data exfiltration",
+  "who": {
+    "role": "traitor",
+    "origin": "internal/external",
+    "level": "all"
+  },
+  "what": {
+    "action": "theft of intellectual property",
+    "assets": ["source code", "design documents", "admin password"]
+  },
+  "when": {
+    "frequency": "single",
+    "time_window": "work hours"
+  },
+  "where": ["application"],
+  "why": {
+    "motivation": "financial",
+    "details": "The insider aimed to sell proprietary information to competitors for personal financial gain."
+  },
+  "how": [
+    {
+      "step": 1,
+      "description": "Requested internal documents from colleagues via email, using pretext of project handoff.",
+      "tactic": "Initial Access",
+      "technique_id": ["T1199", "T1078"],
+      "technique_name": ["Trusted Relationship", "Valid Accounts"],
+      "sub_technique": "-",
+      "procedure": "Insider recruits or convinces colleagues to share credentials or delegate access under false pretenses.",
+      "observable_evidence": [
+        "Unusual peer communications",
+        "Evidence of credential sharing or delegation",
+        "Anomalous account cross-use"
+      ],
+      "detection_data_sources": ["Emails", "System Logs"],
+      "impact": "Provides additional internal access vectors and facilitates subsequent privileged actions."
+    },
+    {
+      "step": 2,
+      "description": "Accessed internal shared drive containing sensitive design materials and credentials.",
+      "tactic": "Privilege Escalation",
+      "technique_id": ["T1566", "T1078"],
+      "technique_name": ["Phishing", "Valid Accounts"],
+      "sub_technique": "-",
+      "procedure": "Perpetrator persuades resource administrators to grant elevated access via social engineering or approval requests.",
+      "observable_evidence": [
+        "Approval emails or tickets granting elevated rights",
+        "Temporary privileged session records"
+      ],
+      "detection_data_sources": ["Emails", "Logon"],
+      "impact": "Acquisition of admin-level credentials enabling access to sensitive repositories."
+    },
+    {
+      "step": 3,
+      "description": "Used company email client to forward source files and credentials to an external personal email address.",
+      "tactic": "Exfiltration",
+      "technique_id": ["T1052"],
+      "technique_name": ["Exfiltration Over Physical Medium"],
+      "sub_technique": "T1052.001",
+      "procedure": "Download or collect sensitive files and transmit them outside controlled boundaries (e.g., to personal cloud or removable device).",
+      "observable_evidence": [
+        "Bulk file read and copy events",
+        "Outbound email attachments to non-corporate domains",
+        "USB insertion or atypical file timestamp anomalies"
+      ],
+      "detection_data_sources": [
+        "System Logs",
+        "Traffic",
+        "File Operation",
+        "HTTP"
+      ],
+      "impact": "Loss of intellectual property, potential regulatory or legal exposure."
+    }
+  ],
+  "reference": [
+    "https://www.securonix.com/blog/insider-threat-profile-case-study-ambitious-leader-data-heist-and-a-church-to-worship-our-ai-overlords/",
+    "https://www.nextdlp.com/resources/blog/monitor-email"
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "attack_id": "gen_attack_8",
+  "scenario_title": "Recurrent Fraud by Masquerader via Modification of Key Data Files",
+  "type": "fraud",
+  "who": {
+    "role": "masquerader",
+    "origin": "internal/external",
+    "privilege_level": "all"
+  },
+  "what": {
+    "action": "fraud",
+    "assets": ["key data files", "financial records", "customer information"]
+  },
+  "when": {
+    "frequency": "recurrent",
+    "time_window": "work hours"
+  },
+  "where": ["data"],
+  "why": {
+    "motivation": ["financial", "personal"],
+    "details": "The masquerader sought to obtain financial gain or personal advantage by repeatedly modifying sensitive or valuable data files, aiming to misguide the employees and gain higher privilege of the attacker."
+  },
+  "how": [
+    {
+      "step": 1,
+      "description": "Accessed key data files either by using compromised credentials, leveraging existing privileges, or requesting additional access under false pretenses.",
+      "tactic": "Initial Access",
+      "technique_id": ["T1078", "T1199"],
+      "technique_name": ["Valid Accounts", "Trusted Relationship"],
+      "sub_technique": "-",
+      "procedure": "Masquerader uses valid or stolen credentials, or leverages trust relationships, to gain access to data files not normally within the user’s scope.",
+      "observable_evidence": [
+        "Access attempts to sensitive directories by account not typically permitted",
+        "Use of credentials outside typical role scope or time-window",
+        "Emails or requests for access under false pretext"
+      ],
+      "detection_data_sources": ["Access Logs", "Authentication Logs", "Email/Request Logs"],
+      "impact": "Initial foothold into key data assets enables subsequent fraudulent manipulation."
+    },
+    {
+      "step": 2,
+      "description": "Modified financial reports and customer records to misrepresent company data and gain unauthorized benefits.",
+      "tactic": "Impact",
+      "technique_id": ["T1565"],
+      "technique_name": ["Data Manipulation"],
+      "sub_technique": "T1565.001",
+      "procedure": "Adversary inserts, deletes or changes stored data (e.g., financial records, customer information) in order to mislead business processes or cover fraud activity. :contentReference[oaicite:3]{index=3}",
+      "observable_evidence": [
+        "Database records or files altered without corresponding change-logs or authorization",
+        "Unexpected changes in financial report totals inconsistent with business logic",
+        "Customer data if modified leading to unexplained account changes"
+      ],
+      "detection_data_sources": ["File Operation Logs", "Database Change Logs", "Audit Logs"],
+      "impact": "Corrupted data integrity leads to financial loss, regulatory non-compliance, reputational damage."
+    },
+    {
+      "step": 3,
+      "description": "Altered system audit logs or permission settings to cover traces of unauthorized modifications and escalate access privileges.",
+      "tactic": "Defense Evasion",
+      "technique_id": ["T1070", "T1565"],
+      "technique_name": ["Indicator Removal on Host", "Data Manipulation"],
+      "sub_technique": "T1070.004",
+      "procedure": "Adversary tampers with log files or permissions settings to remove evidence of the fraudulent manipulation, thereby hiding activity and facilitating repeated mis-use of privileges.",
+      "observable_evidence": [
+        "Deletion or modification of system/audit logs without standard process",
+        "Changes in file permissions or user roles not logged through change management",
+        "Unusual user account privilege changes outside formal workflow"
+      ],
+      "detection_data_sources": ["Audit Log Deletion Events", "Privilege Change Logs", "File System Change Logs"],
+      "impact": "Reduced detectability of fraudulent manipulation; repeated misuse of data assets increases cumulative loss."
+    }
+  ],
+  "reference": [
+    "https://www.justice.gov/usao-wdwa/pr/former-employee-online-car-sales-company-sentenced-more-11-years-prison-2-million"
+  ]
+}

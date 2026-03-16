@@ -1,0 +1,62 @@
+{
+  "attack_id": "gen_attack_7",
+  "scenario_title": "Single-Event Email Fraud via Phishing Attack",
+  "type": "fraud",
+  "who": {
+    "role": "masquerader",
+    "origin": "internal/external",
+    "privilege_level": "all"
+  },
+  "what": {
+    "action": "fraud",
+    "assets": ["user credentials", "financial information"]
+  },
+  "when": {
+    "frequency": "single",
+    "time_window": "work hours"
+  },
+  "where": ["application"],
+  "why": {
+    "motivation": "financial",
+    "details": "Attacker aims to obtain sensitive credentials and financial data through phishing in email activities, then exploit them for unauthorized financial gain."
+  },
+  "how": [
+    {
+      "step": 1,
+      "description": "Crafted and sent phishing emails to targeted employees, imitating trusted sources.",
+      "tactic": "Initial Access",
+      "technique_id": ["T1566"],
+      "technique_name": ["Phishing"],
+      "sub_technique": "T1566.002",
+      "procedure": "Adversary uses email masquerading or spoofing to send malicious link or impersonate trusted sender to collect credentials or gain access. :contentReference[oaicite:1]{index=1}",
+      "observable_evidence": [
+        "Email sent from non-typical sender or address similar to trusted source",
+        "High number of recipients targeted in phishing campaign",
+        "Clickthrough logs showing link in email visited by user"
+      ],
+      "detection_data_sources": ["Email Logs", "Web Proxy/URL Logs", "User Authentication Logs"],
+      "impact": "Compromise of user credentials leading to unauthorized access and subsequent financial fraud."
+    },
+    {
+      "step": 2,
+      "description": "Monitored the fraudulent web page to await victims’ credential input, storing submitted data for later use.",
+      "tactic": "Credential Access",
+      "technique_id": ["T1598"],
+      "technique_name": ["Phishing for Information"],
+      "sub_technique": "T1598.003",
+      "procedure": "Adversary creates fake website mimicking legitimate login page, captures credentials entered by victims, and stores for later exploitation. :contentReference[oaicite:2]{index=2}",
+      "observable_evidence": [
+        "Traffic logs showing user visits to known malicious domain",
+        "Submission of credentials into external site not authorized by organization",
+        "Log entries of new account-use or login attempts using compromised credentials"
+      ],
+      "detection_data_sources": ["Web Traffic Logs", "Authentication Logs", "DNS Logs"],
+      "impact": "Harvested credentials used to access systems, conduct financial transactions or further lateral attacks."
+    }
+  ],
+  "reference": [
+    "https://www.justice.gov/usao-ma/pr/computer-intrusion-and-theft-charges-unsealed-against-two-men",
+    "https://www.justice.gov/usao-cdca/pr/5-defendants-charged-federally-running-scheme-targeted-victim-companies-phishing-text",
+    "https://www.justice.gov/usao-cdca/pr/santa-clarita-man-agrees-plead-guilty-hacking-disney-employees-computer-downloading"
+  ]
+}

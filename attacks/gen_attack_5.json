@@ -1,0 +1,80 @@
+{
+  "attack_id": "gen_attack_5",
+  "scenario_title": "Single-Event System Sabotage via Destruction of Critical OS Resources",
+  "type": "sabotage",
+  "who": {
+    "role": "traitor",
+    "origin": "internal/external",
+    "privilege_level": "system administrator"
+  },
+  "what": {
+    "action": "sabotage",
+    "assets": ["system stability", "critical system files", "backups", "configuration resources"]
+  },
+  "when": {
+    "frequency": "single",
+    "time_window": "after hours"
+  },
+  "where": ["operating system"],
+  "why": {
+    "motivation": ["financial", "personal"],
+    "details": "A privileged insider, motivated by resentment or the potential for personal gain, attempted to disrupt critical system operations by targeting essential OS resources such as configuration files, system backups, or scheduled automation scripts."
+  },
+  "how": [
+    {
+      "step": 1,
+      "description": "Accessed the system with elevated privileges during off-hours and navigated to directories containing core operational components.",
+      "tactic": "Initial Access",
+      "technique_id": ["T1078"],
+      "technique_name": ["Valid Accounts"],
+      "sub_technique": "-",
+      "procedure": "Privileged user leverages legitimate admin account or gains elevated access to enter system during an off-hours window and browse to critical OS/system directories.",
+      "observable_evidence": [
+        "Login or session initiation during unusual time-window for admin role",
+        "Access to directories not typical for user behaviour",
+        "Use of admin credentials outside normal change-control window"
+      ],
+      "detection_data_sources": ["Authentication Logs", "System Access Logs", "Session Logs"],
+      "impact": "Initial foothold into system resources enables direct sabotage potential."
+    },
+    {
+      "step": 2,
+      "description": "Identified and listed essential operating-system resources: configuration files, automation scripts, backups, or scheduled tasks.",
+      "tactic": "Discovery",
+      "technique_id": ["T1083", "T1614"],
+      "technique_name": ["File and Directory Discovery", "Abuse Elevation Control Mechanism"], 
+      "sub_technique": "-",
+      "procedure": "Insider with elevated privileges performs resource-discovery of critical OS components, enumerates backup files, config scripts, scheduled tasks to plan sabotage.",
+      "observable_evidence": [
+        "Directory listing/logs of key system folders (e.g., /etc, C:\\Windows\\System32, backup directories)",
+        "Accessing backup or config file metadata",
+        "Scheduled tasks enumeration by user account"
+      ],
+      "detection_data_sources": ["File Operation Logs", "System Configuration Logs", "Task Scheduler Logs"],
+      "impact": "Mapping of system-critical components enables targeted sabotage rather than random destruction, increasing impact."
+    },
+    {
+      "step": 3,
+      "description": "Executed deletion or modification commands to damage key system components, impairing the organization’s operational capabilities.",
+      "tactic": "Impact",
+      "technique_id": ["T1485", "T1630.002"],
+      "technique_name": ["Data Destruction", "Indicator Removal on Host: File Deletion"],
+      "sub_technique": "T1485.001",
+      "procedure": "Insider uses admin privileges to delete or overwrite configuration files, backups, or disable scheduled automation scripts, thereby triggering system instability or downtime.",
+      "observable_evidence": [
+        "High-volume file deletion or overwriting in critical system directories",
+        "Unexpected removal of backup files or scheduled tasks",
+        "System services stopping unexpectedly or errors related to missing config files"
+      ],
+      "detection_data_sources": ["File Operation Logs", "System Event Logs", "Backup/Restore Logs"],
+      "impact": "Disruption of critical operations, potential downtime, loss of system integrity, increased cost of recovery and reputational damage."
+    }
+  ],
+  "reference": [
+    "https://www.justice.gov/usao-ndoh/pr/texas-man-formerly-employed-ohio-company-convicted-damaging-source-code-and-deleting",
+    "https://www.securonix.com/blog/insider-threat-case-study-misaligned-saboteur/",
+    "https://www.justice.gov/usao-nj/pr/former-employee-national-industrial-company-arrested-attempted-data-extortion",
+    "https://attack.mitre.org/techniques/T1485/",
+    "https://attack.mitre.org/techniques/T1070/004/"
+  ]
+}

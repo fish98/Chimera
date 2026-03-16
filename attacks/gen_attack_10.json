@@ -1,0 +1,82 @@
+{
+  "attack_id": "gen_attack_10",
+  "scenario_title": "Recurrent IP Theft by Masquerader after Employment Ends",
+  "type": "theft of intellectual property",
+  "who": {
+    "role": "masquerader",
+    "origin": "internal/external",
+    "privilege_level": "former employee or outsider using compromised credentials"
+  },
+  "what": {
+    "action": "theft of intellectual property",
+    "assets": ["source code", "confidential documents", "trade secrets"]
+  },
+  "when": {
+    "frequency": "recurrent",
+    "time_window": "after hours"
+  },
+  "where": ["operating system", "network", "application"],
+  "why": {
+    "motivation": "financial",
+    "details": "After leaving the organization, the attacker—either a former employee or someone using stolen credentials—repeatedly accessed internal systems to steal intellectual property, aiming to sell it or leverage it for competitive gain."
+  },
+  "how": [
+    {
+      "step": 1,
+      "description": "Used retained or stolen credentials of a former employee to log in during after-hours from an external location.",
+      "tactic": "Initial Access",
+      "technique_id": ["T1078"],
+      "technique_name": ["Valid Accounts"],
+      "sub_technique": "-",
+      "procedure": "The masquerader uses accounts from a former employee (still valid or compromised) to authenticate from an external network or at unusual hours, leveraging existing credentials to avoid detection. :contentReference[oaicite:1]{index=1}",
+      "observable_evidence": [
+        "Login events for a user account after termination or from unusual location/time",
+        "Use of valid account credentials by an IP or device not previously associated with account",
+        "Remote session initiated using former employee credentials"
+      ],
+      "detection_data_sources": ["Authentication Logs", "VPN / Remote Access Logs", "Account Activity Logs"],
+      "impact": "Unauthorized access to internal systems using valid but stale credentials allows data access without raising immediate alarm."
+    },
+    {
+      "step": 2,
+      "description": "Accessed internal repositories and browsed project folders containing source code and confidential materials.",
+      "tactic": "Discovery",
+      "technique_id": ["T1083", "T1033"],
+      "technique_name": ["File and Directory Discovery", "System Owner/User Discovery"],
+      "sub_technique": "-",
+      "procedure": "The attacker with legitimate credentials enumerates internal file shares, project repositories or source code directories to locate valuable intellectual property or trade secrets.",
+      "observable_evidence": [
+        "Directory listing operations in project/source code folders outside the normal scope of the account",
+        "Account accessing repositories or folders typically reserved for contractors or privileged users",
+        "Use of system owner/user discovery commands to elevate knowledge of environment"
+      ],
+      "detection_data_sources": ["File Operation Logs", "Share Access Logs", "Directory Listing Logs"],
+      "impact": "Mapping of valuable IP assets sets the stage for extraction and increases the risk of significant intellectual property loss."
+    },
+    {
+      "step": 3,
+      "description": "Copied sensitive files and uploaded them to a personal cloud drive or external server repeatedly over time.",
+      "tactic": "Exfiltration",
+      "technique_id": ["T1048", "T1041"],
+      "technique_name": ["Exfiltration Over Alternative Protocol", "Exfiltration Over C2 Channel"],
+      "sub_technique": "-",
+      "procedure": "The attacker compresses, bundles or packages trade-secret files and sends them via an external connection (e.g., personal cloud, FTP, remote server) over encrypted or non-standard channels to avoid detection.",
+      "observable_evidence": [
+        "Large file transfer events to non-corporate domains after hours",
+        "Outbound connections to external cloud storage or unfamiliar servers",
+        "Creation of compressed archives of source code/trade secrets on internal hosts"
+      ],
+      "detection_data_sources": ["Network Traffic Logs", "File Operation Logs", "Cloud Access Logs"],
+      "impact": "Repeated stealing of confidential documents/trade secrets results in cumulative loss of competitive advantage and potential legal/regulatory liability."
+    }
+  ],
+  "reference": [
+    "https://www.justice.gov/usao-ma/pr/former-public-school-information-technology-manager-sentenced-damaging-schools-computer",
+    "https://www.justice.gov/usao-mn/pr/former-it-employee-transcontinental-railroad-sentenced-prison-damaging-ex-employer-s",
+    "https://www.justice.gov/usao-sdny/pr/florida-woman-convicted-damaging-her-former-employer-s-computers-after-she-was-fired",
+    "https://www.justice.gov/usao-ndoh/pr/lorain-man-indicted-accessing-his-employer-s-computer-system-after-learning-he-would-be",
+    "https://www.justice.gov/usao-sdny/pr/former-employee-technology-company-sentenced-six-years-prison-stealing-confidential",
+    "https://www.justice.gov/usao-mdfl/pr/orlando-man-pleads-guilty-conducting-series-cyber-intrusions-against-former-employer",
+    "https://www.justice.gov/usao-sdny/pr/trader-arrested-stealing-trade-secrets-global-quantitative-trading-firm"
+  ]
+}

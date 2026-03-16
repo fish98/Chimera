@@ -1,0 +1,117 @@
+{
+  "attack_id": "multi_attack_1",
+  "scenario_title": "Miscellaneous Insider Data Exfiltration via Privilege Abuse and Social Engineering",
+  "type": "data exfiltration",
+  "who": {
+    "role": "traitor",
+    "origin": "internal/contractor",
+    "privilege_level": "administrator"
+  },
+  "what": {
+    "action": "theft of intellectual property",
+    "assets": [
+      "system design documents",
+      "internal reports",
+      "architecture diagrams"
+    ]
+  },
+  "when": {
+    "frequency": "recurrent",
+    "time_window": ["work hours", "after hours"]
+  },
+  "where": [
+    "operating system",
+    "network",
+    "application"
+  ],
+  "why": {
+    "motivation": ["political", "personal"],
+    "details": "Driven by dissatisfaction and a desire to expose perceived internal misconduct, the insider repeatedly exploited high-level privileges to access and leak sensitive corporate assets—such as network designs and classified documentation—for personal vindication or political signaling."
+  },
+  "how": [
+    {
+      "step": 1,
+      "description": "Obtained internal access to sensitive systems by requesting higher permission from email admin.",
+      "tactic": "Initial Access",
+      "technique_id": ["T1199", "T1078"],
+      "technique_name": ["Trusted Relationship", "Valid Accounts"],
+      "sub_technique": "-",
+      "procedure": "Insider uses trust relationship or existing valid account to escalate access, e.g., requesting administrator level permissions via internal email or privileged delegation.",
+      "observable_evidence": [
+        "Permission request email from privileged user not typical for role",
+        "Grant of admin privileges in access logs without standard justification",
+        "Use of valid credentials in systems outside usual role scope"
+      ],
+      "detection_data_sources": ["Email Logs", "Access Change Logs", "System Authentication Logs"],
+      "impact": "Acquisition of elevated privileges opens pathway for broad access to sensitive assets."
+    },
+    {
+      "step": 2,
+      "description": "Used social engineering to gather credentials from colleagues by direct email solicitation or covert observation.",
+      "tactic": "Credential Access",
+      "technique_id": ["T1566", "T1110"],
+      "technique_name": ["Phishing", "Brute Force / Credential Stuffing (Credential Access)"],
+      "sub_technique": "-",
+      "procedure": "Insider solicits or obtains credentials from coworkers via phishing or asks for help using impersonation or social manipulation; uses collected credentials to further expand access.",
+      "observable_evidence": [
+        "Phishing-style email sent internally requesting credential sharing",
+        "Multiple logon failures or atypical credential use from internal accounts",
+        "Unusual account activity using newly acquired credentials"
+      ],
+      "detection_data_sources": ["Email Logs", "Authentication Logs", "User Behavior Analytics"],
+      "impact": "Credential compromise allows lateral movement and access to additional systems/data."
+    },
+    {
+      "step": 3,
+      "description": "Leveraged unauthorized credentials to read and modify key files in the company.",
+      "tactic": "Privilege Escalation / Collection",
+      "technique_id": ["T1548", "T1039", "T1083"],
+      "technique_name": ["Abuse Elevation Control Mechanism", "Data from Network Shared Drive", "File and Directory Discovery"],
+      "sub_technique": "-",
+      "procedure": "With elevated or stolen credentials, the insider accesses network shares, internal drives and directories containing design documents, internal reports or architecture diagrams; may also modify or copy files for exfiltration preparation.",
+      "observable_evidence": [
+        "Elevated account accessing network shared drives not normally used by the role",
+        "File read/write operations in sensitive folders by privileged account",
+        "Directory listing logs for system design/documentation folders by non-typical user"
+      ],
+      "detection_data_sources": ["File Operation Logs", "Share Access Logs", "Directory Listing Logs"],
+      "impact": "Direct access to high-value assets increases risk of theft and misuse of intellectual property."
+    },
+    {
+      "step": 4,
+      "description": "Automated the mass collection and download of classified files using custom scripts or data crawlers.",
+      "tactic": "Collection / Exfiltration",
+      "technique_id": ["T1119", "T1048", "T1041"],
+      "technique_name": ["Automated Collection", "Exfiltration Over Alternative Protocol", "Exfiltration Over C2 Channel"],
+      "sub_technique": "-",
+      "procedure": "Insider deploys scripts, crawlers or automated tools to search for, compress and bundle classified files and transmit them to external locations via privileged channels or nonstandard exfiltration methods. (See T1119: Automated Collection) :contentReference[oaicite:2]{index=2}",
+      "observable_evidence": [
+        "Scheduled script or automated process triggered during off-hours to copy large data amounts",
+        "Compressed archive creation of design documents followed by network outbound transmission",
+        "Outbound traffic to non-standard external endpoints at odd hours"
+      ],
+      "detection_data_sources": ["Process/Task Scheduler Logs", "File Archive Logs", "Network Traffic Logs"],
+      "impact": "Large volume IP exfiltration increases potential damage to organization in terms of competitive loss and regulatory exposure."
+    },
+    {
+      "step": 5,
+      "description": "Obfuscated tracks by deleting or modifying system logs and using encrypted portable storage for exfiltration.",
+      "tactic": "Defense Evasion",
+      "technique_id": ["T1070", "T1565"],
+      "technique_name": ["Indicator Removal on Host", "Data Manipulation"],
+      "sub_technique": "T1070.004",
+      "procedure": "Insider manipulates or clears logs (e.g., system, security, application) to hide evidence of activity; may also encrypt or modify data files to obscure traces of exfiltration or misuse. :contentReference[oaicite:3]{index=3}",
+      "observable_evidence": [
+        "Log-deletion entries or gaps in audit logs following privileged access activity",
+        "Unexpected changes in file metadata or timestamps consistent with tampering",
+        "Use of encryption or obfuscation tools just prior to exfiltration"
+      ],
+      "detection_data_sources": ["Audit Log Deletion Events", "File Metadata Change Logs", "Endpoint Process Logs"],
+      "impact": "Reduced detectability and increased dwell time raise risk of prolonged compromise and data loss."
+    }
+  ],
+  "reference": [
+    "https://en.wikipedia.org/wiki/Edward_Snowden",
+    "https://www.whistleblowers.org/news/the-case-of-edward-snowden/"
+  ]
+}

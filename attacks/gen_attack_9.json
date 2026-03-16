@@ -1,0 +1,92 @@
+{
+  "attack_id": "gen_attack_9",
+  "scenario_title": "Recurrent IP Theft via Internal Lateral Movement and Unauthorized Access Attempts",
+  "type": "theft of intellectual property",
+  "who": {
+    "role": "masquerader",
+    "origin": "internal/external",
+    "privilege_level": "all"
+  },
+  "what": {
+    "action": "theft of intellectual property",
+    "assets": ["source code", "design documents", "financial data"]
+  },
+  "when": {
+    "frequency": "recurrent",
+    "time_window": "after hours"
+  },
+  "where": ["operating system", "network"],
+  "why": {
+    "motivation": ["financial", "political"],
+    "details": "The attacker sought to obtain valuable intellectual property for personal financial gain or to support a competitive or geopolitical agenda. By exploiting lingering internal access or mis-configurations, the adversary aimed to collect confidential documents, credentials, and other strategic assets over time."
+  },
+  "how": [
+    {
+      "step": 1,
+      "description": "Scanned internal network during off-hours to discover exposed endpoints and shared resources.",
+      "tactic": "Discovery",
+      "technique_id": ["T1046", "T1049"],
+      "technique_name": ["Network Service Discovery", "System Network Connections Discovery"],
+      "sub_technique": "-",
+      "procedure": "Attacker uses network scanning or enumeration tools (e.g., nmap, netstat) to identify endpoints, shared folders or servers accessible within the organization’s network during low-monitoring periods.",
+      "observable_evidence": [
+        "Outbound scanning traffic targeting internal subnets at atypical times",
+        "Large volume of connection attempts to multiple internal hosts from one account/host",
+        "Netstat or similar tool usage logs showing many network connections enumerated"
+      ],
+      "detection_data_sources": ["Network Traffic Logs", "NetFlow/Flow Logs", "Host Process/Command Logs"],
+      "impact": "Identification of new internal targets enables lateral movement and access to new data assets."
+    },
+    {
+      "step": 2,
+      "description": "Identified weakly protected systems and used password reuse or credential stuffing to gain unauthorized access.",
+      "tactic": "Initial Access",
+      "technique_id": ["T1110.004", "T1078"],
+      "technique_name": ["Credential Stuffing", "Valid Accounts"],
+      "sub_technique": "-",
+      "procedure": "Attacker exploits reused credentials or compromised accounts to log into internal systems for which the account is authorized (or nearly so), bypassing typical controls. ([attack.mitre.org T1110.004](https://attack.mitre.org/techniques/T1110.004/?utm_source=chatgpt.com))",
+      "observable_evidence": [
+        "Multiple login attempts with reused credential sets across systems",
+        "Successful login using account credentials from unrelated breach list",
+        "Login from unusual host or time by a valid account"
+      ],
+      "detection_data_sources": ["Authentication Logs", "Failed Login Logs", "Account Activity Logs"],
+      "impact": "Unauthorized access opens new avenues for data theft and lateral expansion."
+    },
+    {
+      "step": 3,
+      "description": "Browsed file servers and document management systems to locate design assets, trade secrets, or financial documents.",
+      "tactic": "Collection",
+      "technique_id": ["T1039", "T1083"],
+      "technique_name": ["Data from Network Shared Drive", "File and Directory Discovery"],
+      "sub_technique": "-",
+      "procedure": "Attacker with gained access inspects network file-shares, document repositories and file servers to identify sensitive intellectual-property assets or financial records for exfiltration.",
+      "observable_evidence": [
+        "High volume of directory listing operations on shared drives",
+        "Access to folders not normally required by the user’s role",
+        "Read operations of large files in design or financial folders"
+      ],
+      "detection_data_sources": ["File Operation Logs", "Shared Drive Access Logs", "Directory Listing Logs"],
+      "impact": "Selection of high-value data sets for later exfiltration increases loss potential."
+    },
+    {
+      "step": 4,
+      "description": "Compressed and uploaded selected sensitive files to a remote server via encrypted channels.",
+      "tactic": "Exfiltration",
+      "technique_id": ["T1048", "T1041"],
+      "technique_name": ["Exfiltration Over Alternative Protocol", "Exfiltration Over C2 Channel"],
+      "sub_technique": "-",
+      "procedure": "Attacker packages or compresses sensitive files and transfers them to an external location using encrypted traffic or unusual protocol ports, bypassing standard data-loss prevention controls.",
+      "observable_evidence": [
+        "Outgoing encrypted traffic to external IP/port not matching normal patterns",
+        "Outbound file transfer events of large size at odd hours",
+        "Detection of compressed archive creation on internal host containing sensitive file names"
+      ],
+      "detection_data_sources": ["Network Traffic Logs", "File Operation Logs", "Endpoint Process Logs"],
+      "impact": "Exfiltration of intellectual property and financial data, causing competitive disadvantage and regulatory exposure."
+    }
+  ],
+  "reference": [
+    "https://www.crowdstrike.com/cybersecurity-101/lateral-movement/"
+  ]
+}

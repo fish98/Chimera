@@ -1,0 +1,61 @@
+{
+  "attack_id": "gen_attack_4",
+  "scenario_title": "Single-Event Sabotage via Mass Hate Email Broadcast",
+  "type": "sabotage",
+  "who": {
+    "role": "traitor",
+    "origin": "internal/external",
+    "privilege_level": "all"
+  },
+  "what": {
+    "action": "sabotage",
+    "assets": ["company reputation", "employee morale", "team cohesion"]
+  },
+  "when": {
+    "frequency": "single",
+    "time_window": "work hours"
+  },
+  "where": ["application"],
+  "why": {
+    "motivation": "personal",
+    "details": "A disgruntled employee, frustrated by perceived unfair treatment or lack of recognition, decided to publicly expose fabricated or exaggerated issues in an all-staff email to damage the company's internal trust and external reputation."
+  },
+  "how": [
+    {
+      "step": 1,
+      "description": "Composed and sent a broadcast email to all employees via the internal email system containing fabricated allegations about unethical company practices and leadership failures, aiming to provoke distrust and lower morale.",
+      "tactic": "Impact",
+      "technique_id": ["T1499", "T1591"],
+      "technique_name": ["Data Manipulation", "Gather Victim Identity Information"],
+      "sub_technique": "-",
+      "procedure": "Insider uses their legitimate email access to all-staff lists to send disruptive communications, misrepresenting facts and encouraging internal distrust; uses personal knowledge of internal grievances to amplify impact.",
+      "observable_evidence": [
+        "Mass email sent to all staff not typical of sender's role",
+        "Email content referencing internal issues or blaming leadership",
+        "High-volume employee responses or complaint tickets shortly after broadcast"
+      ],
+      "detection_data_sources": ["Email Logs", "Message Content Logs", "User Behavior Analytics"],
+      "impact": "Damage to internal trust, employee morale, and brand reputation; potential escalation of internal conflict and subsequent turnover."
+    },
+    {
+      "step": 2,
+      "description": "Leveraged valid email credentials to perform the broadcast without tripping standard content-moderation controls (e.g., by crafting it to appear as status update or internal announcement).",
+      "tactic": "Initial Access",
+      "technique_id": ["T1078"],
+      "technique_name": ["Valid Accounts"],
+      "sub_technique": "-",
+      "procedure": "Insider already possesses legitimate credentials or obtains them; uses them to bypass spam filters and appear as normal internal communication.",
+      "observable_evidence": [
+        "Email send-activity from a user account with valid credentials",
+        "Time of send unusual for role (e.g., non-hr user sending company-wide broadcast)",
+        "No external login anomalies since using valid credentials"
+      ],
+      "detection_data_sources": ["Authentication Logs", "Email Send Logs", "User Activity Analytics"],
+      "impact": "Insider’s message is more likely to be trusted and less likely to be flagged, increasing potential for disruption."
+    }
+  ],
+  "reference": [
+    "CERT Dataset Attacks",
+    "https://www.exabeam.com/blog/infosec-trends/mitre-attck-update-covers-insider-threat-attack-techniques/" 
+  ]
+}

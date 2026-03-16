@@ -1,0 +1,99 @@
+{
+  "attack_id": "multi_attack_3",
+  "scenario_title": "Insider Outsider Collusion for Ransomware and DDoS Distraction",
+  "type": "hybrid_insider_attack",
+  "who": {
+    "role": "traitor",
+    "origin": "internal/external",
+    "privilege_level": "all"
+  },
+  "what": {
+    "action": "sensitive data exfiltration",
+    "assets": [
+      "internal network access",
+      "company sensitive data",
+      "system architecture information"
+    ]
+  },
+  "when": {
+    "frequency": "recurrent",
+    "time_window": ["work hours", "after hours"]
+  },
+  "where": [
+    "application",
+    "network"
+  ],
+  "why": {
+    "motivation": "financial",
+    "details": "Internal traitor bribes insiders to plant malware for the purpose of data theft and ransom, also using a DDoS attack as a cover."
+  },
+  "how": [
+    {
+      "step": 1,
+      "description": "Contacted internal personnel by email, offering large bribes to gain access to internal network permissions.",
+      "tactic": "Initial Access / Persuasion",
+      "technique_id": ["T1566", "T1199"],
+      "technique_name": ["Phishing", "Trusted Relationship"],
+      "sub_technique": "-",
+      "procedure": "Adversary uses social engineering and bribery to recruit or co-opt an insider who holds sufficient privileges, by sending targeted email or messages promising reward for granting or enabling access.",
+      "observable_evidence": [
+        "Internal emails offering payments or reward for permissions",
+        "Access requests initiated by non-standard insiders after contact",
+        "Suspicious correspondence between insider and external actor"
+      ],
+      "detection_data_sources": ["Email Logs", "Access Request Logs", "Insider Communication Monitoring"],
+      "impact": "Compromised insider enables attacker to bypass primary controls and gain privileged access."
+    },
+    {
+      "step": 2,
+      "description": "Insider or colluding actor installed malware script on internal network to collect and exfiltrate sensitive data.",
+      "tactic": "Execution / Persistence",
+      "technique_id": ["T1059", "T1547"],
+      "technique_name": ["Command and Scripting Interpreter", "Boot or Logon Autostart Execution"],
+      "sub_technique": "-",
+      "procedure": "Using access obtained from step 1, malware is planted (script, loader) on the network or host, scheduled or configured for autostart, to enable automated data collection or preparation for exfiltration.",
+      "observable_evidence": [
+        "Malicious script or executable placed in system startup folders",
+        "Unexpected scheduled task or service created by insider account",
+        "New process running with elevated rights loaded by unknown binary"
+      ],
+      "detection_data_sources": ["Process Creation Logs", "Scheduled Task Logs", "File Operation Logs"],
+      "impact": "Malware installation establishes foothold for large-scale data theft or later attack phases."
+    },
+    {
+      "step": 3,
+      "description": "Sent phishing email with malicious link/attachment to other administrators to propagate backdoor and extend system access.",
+      "tactic": "Lateral Movement / Initial Access",
+      "technique_id": ["T1086", "T1566"],
+      "technique_name": ["PowerShell", "Phishing"],
+      "sub_technique": "T1566.001",
+      "procedure": "Actor uses malicious email to lure additional privileged users into clicking link or opening attachment that grants backdoor access, thereby compromising further systems and enabling broader network intrusion.",
+      "observable_evidence": [
+        "Phishing email sent from internal account to admin recipients",
+        "Unexpected PowerShell or script execution by administrator account",
+        "New established remote sessions from host compromised via backdoor"
+      ],
+      "detection_data_sources": ["Email Logs", "Process Execution Logs", "Remote Session Logs"],
+      "impact": "Expansion of control and access across multiple privileged systems increases blast radius and opens exfiltration paths."
+    },
+    {
+      "step": 4,
+      "description": "Launched DDoS attack against company servers to distract security teams while data-exfiltration malware operated in the background.",
+      "tactic": "Impact / Distraction",
+      "technique_id": ["T1499"],
+      "technique_name": ["Endpoint Denial of Service"],
+      "sub_technique": "-",
+      "procedure": "Attackers generate denial-of-service traffic or other mass disruption to consume security resources and reduce detection focus, creating opportunity window for stealth data theft.",
+      "observable_evidence": [
+        "High volume inbound traffic causing server overload or service degradation",
+        "Simultaneous large file export or exfiltration activity during DDoS event",
+        "Alert fatigue or delayed detection correlated with disruption event"
+      ],
+      "detection_data_sources": ["Network Traffic Logs", "Service Availability Logs", "SIEM Alert Logs"],
+      "impact": "Security distraction increases chance of undetected data loss and extends time adversary can operate unobserved."
+    }
+  ],
+  "reference": [
+    "https://www.reuters.com/technology/tesla-workers-shared-sensitive-images-recorded-by-customer-cars-2023-04-06/"
+  ]
+}

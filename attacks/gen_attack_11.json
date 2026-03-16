@@ -1,0 +1,76 @@
+{
+  "attack_id": "gen_attack_11",
+  "scenario_title": "Single-Event Unintentional Data Leak via Misconfigured File Sharing",
+  "type": "data leak",
+  "who": {
+    "role": "unintentional user",
+    "origin": "internal",
+    "privilege_level": "general user"
+  },
+  "what": {
+    "action": "data leak",
+    "assets": ["sensitive files", "customer data", "internal documents"]
+  },
+  "when": {
+    "frequency": "single",
+    "time_window": "work hours"
+  },
+  "where": ["operating system", "network"],
+  "why": {
+    "motivation": "personal",
+    "details": "The user intended to share internal files for team access or convenience, but due to improper configuration, sensitive data became publicly accessible over the network."
+  },
+  "how": [
+    {
+      "step": 1,
+      "description": "Started a local HTTP or file-sharing service to provide quick access to internal resources.",
+      "tactic": "Initial Access",
+      "technique_id": ["T1190", "T1021"],
+      "technique_name": ["Exploit Public-Facing Application", "Remote Services"],
+      "sub_technique": "-",
+      "procedure": "The user sets up or enables a file-sharing or HTTP service locally (or internally) without proper access restrictions, creating a new service endpoint accessible on the network, potentially externally reachable.",
+      "observable_evidence": [
+        "New service listening on unexpected port (HTTP / SMB) on user endpoint",
+        "Outbound service advertisements or listening endpoint logs on internal network",
+        "Firewall or network logs showing unusual inbound connections to user workstation/service"
+      ],
+      "detection_data_sources": ["Service Configuration Logs", "Network Traffic Logs", "Port Listening Logs"],
+      "impact": "Creation of a new access vector that may not be monitored; facilitates unintentional exposure of data."
+    },
+    {
+      "step": 2,
+      "description": "Placed sensitive files into the shared directory without reviewing access restrictions.",
+      "tactic": "Collection",
+      "technique_id": ["T1083", "T1530"],
+      "technique_name": ["File and Directory Discovery", "Data from Cloud Storage Object"],
+      "sub_technique": "-",
+      "procedure": "The user copies or moves sensitive files (e.g., customer data, internal documents) into the newly created share without verifying the permissions or accessibility, making them available to unintended users.",
+      "observable_evidence": [
+        "File copy operations to shared directory by general user account",
+        "Shared folder permissions set to ‘Everyone’ or public group",
+        "Access events from unintended accounts reading files soon after share creation"
+      ],
+      "detection_data_sources": ["File Operation Logs", "Share Permission Change Logs", "Access Logs"],
+      "impact": "Sensitive data becomes accessible to broader audience than intended, increasing risk of data leakage."
+    },
+    {
+      "step": 3,
+      "description": "Did not configure authentication or network access control, unintentionally exposing the files to public access.",
+      "tactic": "Exfiltration",
+      "technique_id": ["T1567", "T1083"],
+      "technique_name": ["Exfiltration Over Web Service", "File and Directory Discovery"],
+      "sub_technique": "-",
+      "procedure": "Due to misconfiguration, the share allows unauthenticated or excessively permissive access (e.g., via HTTP or SMB) from internal or external network, causing sensitive files to be accessed or downloaded by unintended parties.",
+      "observable_evidence": [
+        "Anonymous or guest-access file downloads from share logs",
+        "External IP addresses or non-corporate devices accessing shared directory",
+        "High volume or unusual file access/download events from public network"
+      ],
+      "detection_data_sources": ["File Download Logs", "Web Access Logs", "Network Traffic Logs"],
+      "impact": "Unintended public exposure of sensitive data, regulatory non-compliance, reputational damage."
+    }
+  ],
+  "reference": [
+    "https://www.syteca.com/en/blog/real-life-examples-insider-threat-caused-breaches"
+  ]
+}
