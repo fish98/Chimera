@@ -18,6 +18,7 @@ experiment_output/
 workspace/
 init_schedule_old/
 !requirements.txt
+!download.txt
 
 # output files
 demo/init_schedule/
