@@ -1,3 +1,16 @@
+# ========= Copyright 2023-2026 @ CAMEL-AI.org. All Rights Reserved. =========
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ========= Copyright 2023-2026 @ CAMEL-AI.org. All Rights Reserved. =========
 import os
 import json
 import config
@@ -5,12 +18,20 @@ from foundation_model import run_llm
 from daily_attack_schedule import update_daily_schedule_with_attack
 import argparse
 
-def select_attack_date(attacker, attack_id, id_role_map):
 
+def select_attack_date(attacker, attack_id, id_role_map):
     # scenarios = ["tech_company", "finance_corporation", "medical_institution"]
     # attacker_ids = ["cdev-1", "qres-1", "his-1"]
     weeks = [1, 2, 3, 4]
-    dates = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    dates = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ]
 
     attack_info_path = os.path.join(config.attack_dir, f"{attack_id}.json")
 
@@ -25,14 +46,16 @@ def select_attack_date(attacker, attack_id, id_role_map):
 
     for week in weeks:
         for date in dates:
-            schedule_file = os.path.join(schedule_path, f"week_{week}", f"{attacker}_week_{week}_{date}.json")
+            schedule_file = os.path.join(
+                schedule_path, f"week_{week}", f"{attacker}_week_{week}_{date}.json"
+            )
             if os.path.exists(schedule_file):
                 with open(schedule_file, "r") as f:
                     schedule = json.load(f)
                 key_name = f"week_{week}_{date}"
                 total_schedule[key_name] = schedule
 
-    system_prompt = f"""You are an attacker in the company. The details of your attack are as follows: {attack_info}. 
+    system_prompt = f"""You are an attacker in the company. The details of your attack are as follows: {attack_info}.
                         I will provide you with the overall schedule of each day, and you should reply with the most suitable day you select to attack to conceal your attacks and take the most of the attack effect.
                         **You should only reply with the data in the format of "week_{{week number}}_{{date}}" and do not reply with anything else**. The date should be in the format of "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", or "Sunday". The week number should be an integer. For example, if you want to attack on the first Monday, you should reply with "week_1_Monday". If you want to attack on the third Friday, you should reply with "week_3_Friday".
                     """
@@ -52,15 +75,23 @@ def select_attack_date(attacker, attack_id, id_role_map):
                 raise
 
     ### update the schedule
-    print(f"Attack {attack_id} scheduled on week {attack_week} - {attack_date} by {attacker}")
-    update_daily_schedule_with_attack(attack_week, attack_date, attacker, attack_id, id_role_map)
+    print(
+        f"Attack {attack_id} scheduled on week {attack_week} - {attack_date} by {attacker}"
+    )
+    update_daily_schedule_with_attack(
+        attack_week, attack_date, attacker, attack_id, id_role_map
+    )
     return attack_week, attack_date
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Attack selection and scheduling")
-    parser.add_argument("--attacker", type=str, required=True, help="Attacker id, e.g., cdev-1")
-    parser.add_argument("--attid", type=str, required=True, help="Attack id, e.g., gen_attack_1")
+    parser.add_argument(
+        "--attacker", type=str, required=True, help="Attacker id, e.g., cdev-1"
+    )
+    parser.add_argument(
+        "--attid", type=str, required=True, help="Attack id, e.g., gen_attack_1"
+    )
     args = parser.parse_args()
 
     attacker = args.attacker
@@ -76,12 +107,13 @@ if __name__ == "__main__":
     for file in os.listdir(member_dir):
         if file.endswith(".jsonc"):
             member_profile_path = os.path.join(member_dir, file)
-            with open(member_profile_path, 'r') as f:
+            with open(member_profile_path, "r") as f:
                 member_profile = json.load(f)
-            id_role_map[member_profile['id']] = member_profile['role'] # add id-role map
-            id_list.append(member_profile['id'])
-            profile_list.append(member_profile) # add profile
+            id_role_map[member_profile["id"]] = member_profile[
+                "role"
+            ]  # add id-role map
+            id_list.append(member_profile["id"])
+            profile_list.append(member_profile)  # add profile
 
     ########################
     select_attack_date(attacker, attack_id, id_role_map)
-

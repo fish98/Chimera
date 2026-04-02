@@ -1,6 +1,19 @@
+# ========= Copyright 2023-2026 @ CAMEL-AI.org. All Rights Reserved. =========
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ========= Copyright 2023-2026 @ CAMEL-AI.org. All Rights Reserved. =========
 # system config
 
-base_dir = "/data/Chimera" ###### 1 #######
+base_dir = "/data/Chimera"  ###### 1 #######
 env_path = f"{base_dir}/.env"
 
 # scenario name
@@ -8,16 +21,16 @@ scenario_name = "chimera_scenario_1"
 
 # company_id = "tech_company" ###### 2 #######
 # company_id = "finance_corporation"
-company_id = "medical_institution" 
+company_id = "medical_institution"
 
 # company_type = "Game Company"
-# company_type = "Finance Corporation (Quantitative Hedge Fund)" # 
-company_type = "Medical Institution (Small Community Hospital)" ###### 3 #######
+# company_type = "Finance Corporation (Quantitative Hedge Fund)" #
+company_type = "Medical Institution (Small Community Hospital)"  ###### 3 #######
 
 # profile output directory
 profile_output_dir = f"{base_dir}/{scenario_name}/generated_members"
 # attack directory
-attack_dir = f"/data/attacks"
+attack_dir = "/data/attacks"
 # attack log directory
 attack_schedule_dir = f"{base_dir}/{scenario_name}/attack_schedule"
 
@@ -35,10 +48,10 @@ attack_log_dir = f"{base_dir}/{scenario_name}/attack_logs"
 # goal of the company
 # goal = "The goal of your company is to construct a Third-person shooter game from the beginning." ####### 4 #######
 # goal = "The goal of your company is to design and register a market-neutral statistical arbitrage fund targeting UHNWIs (Ultra-High-Net-Worth Individuals) under SEC regulations from the beginning."
-goal = "The goal of your institution (small community hospital) is to complete electronic health record (EHR) collection and seasonal influenza trend analysis from the beginning."
+goal = "The goal of your institution (small community hospital) is to complete electronic health record collection and seasonal influenza trend analysis from the beginning."
 
-period = 2 # weeks
-employee_number = 5 # IMPORTANT: to change the number of employees
+period = 2  # weeks
+employee_number = 5  # IMPORTANT: to change the number of employees
 
 # date for starters
 base_date = "2025-05-02"

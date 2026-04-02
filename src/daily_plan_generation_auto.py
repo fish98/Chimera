@@ -1,4 +1,16 @@
-from openai import OpenAI
+# ========= Copyright 2023-2026 @ CAMEL-AI.org. All Rights Reserved. =========
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ========= Copyright 2023-2026 @ CAMEL-AI.org. All Rights Reserved. =========
 from dotenv import load_dotenv
 
 import config
@@ -13,23 +25,32 @@ load_dotenv()
 
 days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
-def export_weekly_schedule_to_daily(init_schedule_dir:str, week_id:int, employee_id:str, id_role_map:dict, profile_list:list):
+
+def export_weekly_schedule_to_daily(
+    init_schedule_dir: str,
+    week_id: int,
+    employee_id: str,
+    id_role_map: dict,
+    profile_list: list,
+):
     week_dir = os.path.join(init_schedule_dir, f"week_{week_id}")
     if not os.path.exists(week_dir):
         os.makedirs(week_dir)
 
     # load the json file
-    week_file = os.path.join(config.meeting_log_dir, f"meeting_schedule_week_{week_id}.json")
+    week_file = os.path.join(
+        config.meeting_log_dir, f"meeting_schedule_week_{week_id}.json"
+    )
     with open(week_file, "r") as f:
         data = json.load(f)
-    
+
     for employee in data:
-        if employee['id'] == employee_id:
+        if employee["id"] == employee_id:
             # load the json file
-            weekly_goal = employee['detailed_goals']
+            weekly_goal = employee["detailed_goals"]
 
     for member_profile in profile_list:
-        if member_profile['id'] == employee_id:
+        if member_profile["id"] == employee_id:
             profile_detail = member_profile
             break
 
@@ -39,7 +60,7 @@ def export_weekly_schedule_to_daily(init_schedule_dir:str, week_id:int, employee
             week_id=week_id,
             profile_detail=profile_detail,
             id_role_map=id_role_map,
-            weekly_goal=weekly_goal
+            weekly_goal=weekly_goal,
         )
 
         if "```json" in output:
@@ -61,14 +82,17 @@ def export_weekly_schedule_to_daily(init_schedule_dir:str, week_id:int, employee
     for day in days:
         if day in daily_week_schedule and daily_week_schedule[day]:
             # save the json to init_schedule/
-            day_file = os.path.join(week_dir, f"{employee_id}_week_{week_id}_{day}.json")
+            day_file = os.path.join(
+                week_dir, f"{employee_id}_week_{week_id}_{day}.json"
+            )
             with open(day_file, "w") as fd:
                 json.dump(daily_week_schedule[day], fd, indent=4)
-    
 
-def generate_daily_plan_with_gpt(week_id:int, profile_detail:dict, id_role_map, weekly_goal:str):
 
-    system_prompt = f"""Your name is {profile_detail['name']}. Your personality is {profile_detail['mbti']}, and your age is {profile_detail['age']}. 
+def generate_daily_plan_with_gpt(
+    week_id: int, profile_detail: dict, id_role_map, weekly_goal: str
+):
+    system_prompt = f"""Your name is {profile_detail['name']}. Your personality is {profile_detail['mbti']}, and your age is {profile_detail['age']}.
                 You are a {profile_detail['role']} in a {config.company_type}.
                 The goal of your company is {config.goal}. \n\n
                 I will provide you with your goal plan for this week after you meet with all the members in the company, and you should divide these tasks into a **very detailed** schedule for your daily work. \n\n
@@ -84,8 +108,8 @@ def generate_daily_plan_with_gpt(week_id:int, profile_detail:dict, id_role_map, 
     llm_output = run_llm(system_prompt, user_prompt)
     return llm_output
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     # mkdir of the init_schedule directory
     init_schedule_dir = config.init_schedule_dir
     if not os.path.exists(init_schedule_dir):
@@ -101,22 +125,30 @@ if __name__ == "__main__":
     for file in os.listdir(member_dir):
         if file.endswith(".jsonc"):
             member_profile_path = os.path.join(member_dir, file)
-            with open(member_profile_path, 'r') as f:
+            with open(member_profile_path, "r") as f:
                 member_profile = json.load(f)
-            id_role_map[member_profile['id']] = member_profile['role'] # add id-role map
-            id_list.append(member_profile['id'])
-            profile_list.append(member_profile) # add profile
+            id_role_map[member_profile["id"]] = member_profile[
+                "role"
+            ]  # add id-role map
+            id_list.append(member_profile["id"])
+            profile_list.append(member_profile)  # add profile
     ########################
 
-     # for single employee single week
+    # for single employee single week
     # week_id = 2
     # employee_id = "cdev-1"
     # export_weekly_schedule_to_daily(init_schedule_dir, week_id, employee_id, id_role_map, profile_list)
 
     # For every employee and each week
-    for week_id in tqdm(range(1, config.period + 1), desc="Generating weekly schedule... "):
-        for employee_id in tqdm(id_list, desc=f"Processing employees for week {week_id}", leave=False):
-            export_weekly_schedule_to_daily(init_schedule_dir, week_id, employee_id, id_role_map, profile_list)
- 
+    for week_id in tqdm(
+        range(1, config.period + 1), desc="Generating weekly schedule... "
+    ):
+        for employee_id in tqdm(
+            id_list, desc=f"Processing employees for week {week_id}", leave=False
+        ):
+            export_weekly_schedule_to_daily(
+                init_schedule_dir, week_id, employee_id, id_role_map, profile_list
+            )
+
     # post check
     # BASH: for i in init_schedule/*; do ls ${i} | wc -l; done

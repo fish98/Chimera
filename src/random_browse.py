@@ -1,5 +1,17 @@
+# ========= Copyright 2023-2026 @ CAMEL-AI.org. All Rights Reserved. =========
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ========= Copyright 2023-2026 @ CAMEL-AI.org. All Rights Reserved. =========
 import sys
-from dotenv import load_dotenv
 import config
 
 from camel.models import ModelFactory
@@ -16,6 +28,7 @@ from owl.utils import run_society
 from camel.societies import RolePlaying
 
 set_log_level(level="DEBUG")
+
 
 def construct_society(question: str) -> RolePlaying:
     r"""Construct a society of agents based on the given question.
@@ -38,8 +51,12 @@ def construct_society(question: str) -> RolePlaying:
         "google": ModelPlatformType.GEMINI,
         "deepseek": ModelPlatformType.DEEPSEEK,
     }
-    model_type_selection = foundation_corp_map.get(config.foundation_corp, ModelType.GPT_4O_MINI)
-    model_platform_selection = foundation_model_platform_map.get(config.foundation_corp, ModelPlatformType.DEFAULT)
+    model_type_selection = foundation_corp_map.get(
+        config.foundation_corp, ModelType.GPT_4O_MINI
+    )
+    model_platform_selection = foundation_model_platform_map.get(
+        config.foundation_corp, ModelPlatformType.DEFAULT
+    )
 
     # Create models for different components
     models = {

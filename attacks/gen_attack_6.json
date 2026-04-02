@@ -18,7 +18,7 @@
   "where": ["operating system"],
   "why": {
     "motivation": ["financial", "personal"],
-    "details": "The insider used advanced malware and persistence techniques to monitor the system covertly, seeking either revenge or external payment by exfiltrating valuable business or operational data."
+    "details": "The insider used advanced malware and persistence techniques to monitor the system convertly, seeking either revenge or external payment by exfiltrating valuable business or operational data."
   },
   "how": [
     {
@@ -51,7 +51,7 @@
         "Service or process starts automatically tagged as suspicious or non-standard"
       ],
       "detection_data_sources": ["Registry Change Logs", "Scheduled Task Logs", "System Startup Logs"],
-      "impact": "Persistent presence on host enables covert monitoring and further sabotage without repeated manual action."
+      "impact": "Persistent presence on host enables convert monitoring and further sabotage without repeated manual action."
     },
     {
       "step": 3,
@@ -60,7 +60,7 @@
       "technique_id": ["T1071", "T1219"],
       "technique_name": ["Application Layer Protocol", "Remote Access Tool"],
       "sub_technique": "-",
-      "procedure": "Malware or insider uses a command-line tool or embedded agent to initiate a covert outbound connection to an attacker-controlled server, establishing a remote-control channel for later data exfiltration or monitoring.",
+      "procedure": "Malware or insider uses a command-line tool or embedded agent to initiate a convert outbound connection to an attacker-controlled server, establishing a remote-control channel for later data exfiltration or monitoring.",
       "observable_evidence": [
         "Outbound network connection to non-standard external IP/port after hours",
         "Use of uncommon protocol or port for external connection (e.g., non-443 HTTPS, custom port)",

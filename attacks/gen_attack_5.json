@@ -42,7 +42,7 @@
       "description": "Identified and listed essential operating-system resources: configuration files, automation scripts, backups, or scheduled tasks.",
       "tactic": "Discovery",
       "technique_id": ["T1083", "T1614"],
-      "technique_name": ["File and Directory Discovery", "Abuse Elevation Control Mechanism"], 
+      "technique_name": ["File and Directory Discovery", "Abuse Elevation Control Mechanism"],
       "sub_technique": "-",
       "procedure": "Insider with elevated privileges performs resource-discovery of critical OS components, enumerates backup files, config scripts, scheduled tasks to plan sabotage.",
       "observable_evidence": [

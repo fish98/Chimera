@@ -47,7 +47,7 @@
     },
     {
       "step": 2,
-      "description": "Used social engineering to gather credentials from colleagues by direct email solicitation or covert observation.",
+      "description": "Used social engineering to gather credentials from colleagues by direct email solicitation or convert observation.",
       "tactic": "Credential Access",
       "technique_id": ["T1566", "T1110"],
       "technique_name": ["Phishing", "Brute Force / Credential Stuffing (Credential Access)"],

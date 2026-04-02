@@ -78,7 +78,7 @@
     },
     {
       "step": 4,
-      "description": "Browsed external competitor websites and job postings to initiate covert contact or evaluate value of stolen data.",
+      "description": "Browsed external competitor websites and job postings to initiate convert contact or evaluate value of stolen data.",
       "tactic": "Reconnaissance",
       "technique_id": ["T1591", "T1592"],
       "technique_name": ["Gather Victim Org. Information", "Search Open Technical Databases"],

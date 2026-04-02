@@ -1,8 +1,20 @@
+# ========= Copyright 2023-2026 @ CAMEL-AI.org. All Rights Reserved. =========
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ========= Copyright 2023-2026 @ CAMEL-AI.org. All Rights Reserved. =========
 #
 # export run_task to support LLM agent operation, init with CamelAI
 #
 
-import sys
 import os
 import logging
 
@@ -22,14 +34,17 @@ from camel.types import ModelPlatformType, ModelType
 from camel.logger import set_log_level
 
 # from owl.utils import run_society
-from owl.utils import run_chimera_society #, DocumentProcessingToolkit
+from owl.utils import run_chimera_society  # , DocumentProcessingToolkit
 from camel.societies import RolePlaying
 
 import config
 
 set_log_level(level="DEBUG")
 
-def construct_society(question: str, output_dir: str, temperature: float = 0) -> RolePlaying:
+
+def construct_society(
+    question: str, output_dir: str, temperature: float = 0
+) -> RolePlaying:
     r"""Construct a society of agents based on the given question.
 
     Args:
@@ -46,17 +61,21 @@ def construct_society(question: str, output_dir: str, temperature: float = 0) ->
 
     ### For camel
     foundation_corp_map = {
-            "openai": ModelType.GPT_4O_MINI,
-            "google": ModelType.GEMINI_2_0_FLASH,
-            "deepseek": ModelType.DEEPSEEK_CHAT,
-        }
+        "openai": ModelType.GPT_4O_MINI,
+        "google": ModelType.GEMINI_2_0_FLASH,
+        "deepseek": ModelType.DEEPSEEK_CHAT,
+    }
     foundation_model_platorm_map = {
-            "openai": ModelPlatformType.OPENAI,
-            "google": ModelPlatformType.GEMINI,
-            "deepseek": ModelPlatformType.DEEPSEEK,
-        }
-    model_type_selection = foundation_corp_map.get(config.foundation_corp, ModelType.GPT_4O_MINI)
-    model_platform_selection = foundation_model_platorm_map.get(config.foundation_corp, ModelPlatformType.DEFAULT)
+        "openai": ModelPlatformType.OPENAI,
+        "google": ModelPlatformType.GEMINI,
+        "deepseek": ModelPlatformType.DEEPSEEK,
+    }
+    model_type_selection = foundation_corp_map.get(
+        config.foundation_corp, ModelType.GPT_4O_MINI
+    )
+    model_platform_selection = foundation_model_platorm_map.get(
+        config.foundation_corp, ModelPlatformType.DEFAULT
+    )
 
     # Create models for different components
     models = {
@@ -85,7 +104,9 @@ def construct_society(question: str, output_dir: str, temperature: float = 0) ->
     # Configure toolkits
     tools = [
         *FileWriteToolkit(output_dir=output_dir).get_tools(),
-        *TerminalToolkit(working_dir=output_dir, log_path=output_dir, need_terminal=False).get_tools(),
+        *TerminalToolkit(
+            working_dir=output_dir, log_path=output_dir, need_terminal=False
+        ).get_tools(),
     ]
     if not config.offline_mode:
         tools += [
@@ -120,7 +141,17 @@ def construct_society(question: str, output_dir: str, temperature: float = 0) ->
 
     return society
 
-def run_task(week: int, date: str, task: str, member_id: str, log_dir: str, event_index: int, output_dir: str, temperature: float = 0) -> str:
+
+def run_task(
+    week: int,
+    date: str,
+    task: str,
+    member_id: str,
+    log_dir: str,
+    event_index: int,
+    output_dir: str,
+    temperature: float = 0,
+) -> str:
     r"""Run the OWL system with a given task.
 
     Args:
@@ -135,7 +166,9 @@ def run_task(week: int, date: str, task: str, member_id: str, log_dir: str, even
     # output_dir saves all the intermediate files and result during the execution
     society = construct_society(task, output_dir, temperature)
     os.makedirs(log_dir, exist_ok=True)
-    detailed_log = os.path.join(log_dir, f"{member_id}_week_{week}_{date}_executio_task_{event_index}.log")
+    detailed_log = os.path.join(
+        log_dir, f"{member_id}_week_{week}_{date}_executio_task_{event_index}.log"
+    )
     # Configure a FileHandler for the logger
     file_handler = logging.FileHandler(detailed_log, mode="w")
     file_handler.setLevel(logging.INFO)
@@ -161,8 +194,8 @@ def run_task(week: int, date: str, task: str, member_id: str, log_dir: str, even
 
     return answer
 
+
 if __name__ == "__main__":
-    
     # r"""Main function to run the OWL system with an example question."""
     # # Default research question
     default_task = "Navigate to camel.ai, count the paper numbers has been published. No need to verify your answer."
