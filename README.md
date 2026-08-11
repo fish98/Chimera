@@ -66,7 +66,6 @@ Chimera/
 │   ├── daily_execution.sh          # Orchestrate multi-day simulation with log capture
 │   ├── attack_auto.sh              # Automate attack-day execution
 │   └── exit_checker.sh             # Process watchdog for simulation runs
-├── post_process_scripts/           # Jupyter notebooks and scripts for dataset post-processing
 └── zips/
     ├── owl.zip                     # Modified OWL multi-agent framework
     └── camel.zip                   # Modified Camel multi-agent framework

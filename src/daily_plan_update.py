@@ -1,16 +1,8 @@
-# ========= Copyright 2023-2026 @ CAMEL-AI.org. All Rights Reserved. =========
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# ========= Copyright (c) 2026 TTFISH. Licensed under the MIT License. =========
+# See the LICENSE file in the project root for the full license text.
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ========= Copyright 2023-2026 @ CAMEL-AI.org. All Rights Reserved. =========
+# SPDX-License-Identifier: MIT
+# ==============================================================================
 from dotenv import load_dotenv
 import json
 from foundation_model import run_llm
@@ -54,7 +46,7 @@ def update_daily_schedule_with_gpt(
                             **Note you should consider your working time based on your personal preferences (whether to work after the working hours or not)**\n\n
                             ** You are HIGHLY recommended to NOT work after 18:00, but if you have to, please consider you personality in arranging your schedule. If you think you are off work, then you do not need to reply or arrange new tasks afterwards in your schedule**\n\n
                             **You should organize your activity timetable into a JSON format for the whole week with the necessary keys including \\\"Time\\\" and \\\"Activity\\\"**\n\n
-                            The example format can be found as follows: \n{{\n[\{{\n      \"Time\": \"08:00\",\n      \"Activity\": \"Log in to the OA system, check emails, and review the week's goals\"\n    }},\n    {{\n      \"Time\": \"09:00\",\n      \"Activity\": \"Meet with @Designer to align on requirements and confirm tool selection\"\n    }}]\n}}\n\n
+                            The example format can be found as follows: \n{{\n[\\{{\n      \"Time\": \"08:00\",\n      \"Activity\": \"Log in to the OA system, check emails, and review the week's goals\"\n    }},\n    {{\n      \"Time\": \"09:00\",\n      \"Activity\": \"Meet with @Designer to align on requirements and confirm tool selection\"\n    }}]\n}}\n\n
                             The response should be in the JSON format, with very detailed information regarding on what time, specifically what you've done. **Do not add an event at the current time!**"""
     user_prompt = f"""Your previous schedule is {previous_schedule}.
                             Currently time it is {current_time}.
@@ -107,7 +99,7 @@ def update_daily_schedule_with_gpt_attack(
                             ** You are HIGHLY recommended to NOT work after 18:00, but if you have to, please consider you personality in arranging your schedule. If you think you are off work, then you do not need to reply or arrange new tasks afterwards in your schedule**\n\n
                             **You should organize your activity timetable into a JSON format for the whole week with the necessary keys including \\\"Time\\\" and \\\"Activity\\\"**\n\n
                             For the scheduled activities which involves with the attack/threat behaviors, **You must include another key titled "Attack"**
-                            The example format can be found as follows: \n{{\n[\{{\n      \"Time\": \"08:00\",\n      \"Activity\": \"Log in to the OA system, check emails, and review the week's goals\"\n    }},\n    {{\n      \"Time\": \"09:00\",\n   \"Attack\": \"True\",\n      \"Activity\": \"contact @Designer to ask about the classified design note of the company.\"\n    }}]\n}}\n\n
+                            The example format can be found as follows: \n{{\n[\\{{\n      \"Time\": \"08:00\",\n      \"Activity\": \"Log in to the OA system, check emails, and review the week's goals\"\n    }},\n    {{\n      \"Time\": \"09:00\",\n   \"Attack\": \"True\",\n      \"Activity\": \"contact @Designer to ask about the classified design note of the company.\"\n    }}]\n}}\n\n
                             The response should be in the JSON format, with very detailed information regarding on what time, specifically what you've done. **Do not add an event at the current time!**"""
     user_prompt = f"""Your previous schedule is {previous_schedule}. You attack information is {attack_info}. Currently time it is {current_time}. \n
                             Your previous email conversation with your colleagues {incom_email_data['from']} can be found as follows:

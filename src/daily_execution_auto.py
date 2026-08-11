@@ -1,16 +1,8 @@
-# ========= Copyright 2023-2026 @ CAMEL-AI.org. All Rights Reserved. =========
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
+# ========= Copyright (c) 2026 TTFISH. Licensed under the MIT License. =========
+# See the LICENSE file in the project root for the full license text.
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ========= Copyright 2023-2026 @ CAMEL-AI.org. All Rights Reserved. =========
+# SPDX-License-Identifier: MIT
+# ==============================================================================
 import nest_asyncio
 from multiprocessing import Process
 from threading import Thread
@@ -21,6 +13,7 @@ import json
 import json5
 import os
 import csv
+import itertools
 import random
 import threading
 
@@ -123,6 +116,9 @@ def purturbation_schedule(schedule):
             minutes=random.randint(-10, 10), seconds=random.randint(-30, 30)
         )
         task["Time"] = (task_time + purturbation_time).strftime("%H:%M:%S")
+    # keep the timeline monotonic: times are zero-padded %H:%M:%S, so a plain
+    # string sort is chronological
+    schedule.sort(key=lambda task: task["Time"])
     return schedule
 
 
@@ -192,12 +188,20 @@ class Member:
         self.reply_lock = False
         self.next_reply_time = None
 
+        # replan proposals produced by reply threads, committed by the main loop
+        self.pending_proposals = []
+        # at most one reply/replan worker in flight per member
+        self.replan_in_flight = False
+
         if not self.no_more_task:
             self.next_task_time = datetime.strptime(
                 self.schedule[self.schedule_index]["Time"], "%H:%M:%S"
             )
 
-        self.execution_task_id = 0
+        # allocated by next_task_id(); a plain `+= 1` is a read-modify-write and
+        # the main loop and the reply thread would hand out colliding ids, which
+        # makes run_task() overwrite the previous detailed log of that id
+        self._task_id_seq = itertools.count()
         self.temp_dir = os.path.join(log_dir, f"{self.id}_temp")
 
         self.previous_summary = self.load_previous_summary()
@@ -307,25 +311,39 @@ class Member:
         # log the email
         self.email_logging(datetime.now(), current_time, email_info)
 
-    def reply_email(self, current_time):
-        # only reply the first in the self.waiting_communication
-        incom_email_data = self.waiting_communication[0]
+    def reply_email_worker(self, incom_email_data, current_time):
+        # thin wrapper so a failed reply can never strand the in-flight flag
+        try:
+            self.reply_email(incom_email_data, current_time)
+        finally:
+            self.replan_in_flight = False
+
+    def reply_email(self, incom_email_data, current_time):
         recipient_id = incom_email_data[
             "from"
         ]  # TODO: can refine here to include more members
         reply_email, reply_email_data = reply_email_content(
             recipient_id, incom_email_data, self.member_profile
         )
+        task_id = self.next_task_id()
         if reply_email:
+            # built once, outside the delivery loop: an unknown recipient must
+            # not leave it unbound and kill this thread before the replan runs
+            email_info = {
+                "from": self.id,
+                "to": [recipient_id],
+                "subject": reply_email_data["subject"],
+                "content": reply_email_data["content"],
+            }
+            delivered = False
             for member in members:
                 if member.id == recipient_id:
-                    email_info = {
-                        "from": self.id,
-                        "to": [recipient_id],
-                        "subject": reply_email_data["subject"],
-                        "content": reply_email_data["content"],
-                    }
                     member.waiting_communication.append(email_info)
+                    delivered = True
+            if not delivered:
+                print(
+                    f"[WARN] {self.id} could not deliver its reply: unknown recipient {recipient_id}."
+                )
             print(
                 f"[INFO] {self.id} replied at {current_time.strftime('%H:%M:%S')} to {recipient_id} with subject: {reply_email_data['subject']}"
             )
@@ -338,6 +356,7 @@ class Member:
                 datetime.now(),
                 current_time,
                 f"check received email from {recipient_id} and reply",
+                task_id,
             )
         else:
             print(
@@ -348,10 +367,9 @@ class Member:
                 datetime.now(),
                 current_time,
                 f"check received email from {recipient_id}",
+                task_id,
             )
 
-        # task logging id += 1 for the behavior
-        self.execution_task_id += 1
         # after replying the email, should update one's schedule
         self.update_schedule(incom_email_data, reply_email_data, current_time)
 
@@ -361,7 +379,7 @@ class Member:
             f"[INFO] {self.id} is updating the schedule at {current_time.strftime('%H:%M:%S')}."
         )
         updated_schedule = update_daily_schedule(
-            self.schedule,
+            list(self.schedule),
             self.member_profile,
             incom_email_data,
             reply_email_data,
@@ -370,42 +388,59 @@ class Member:
             self.previous_summary,
         )
         if updated_schedule is not None:
-            # update the schedule
-            old_schedule = self.schedule
-            old_schedule_index = self.schedule_index
-            self.schedule = purturbation_schedule(updated_schedule)
-            # check current time to location schedule_index
-            task_check = False
-            for i, task in enumerate(self.schedule):
-                task_time = datetime.strptime(task["Time"], "%H:%M:%S")
-                if task_time > current_time:
-                    self.schedule_index = i
-                    task_check = True
-                    break
-            if not task_check:
-                print(
-                    f"Updated {self.id} schedule is all before the current time, so do not update."
-                )
-                print(f"Updated schedule: {self.schedule}")
-                print(f"Old schedule: {old_schedule}")
-                print(f"Current time: {current_time.strftime('%H:%M:%S')}")
-                # if so, do not update the schedule
-                self.schedule = old_schedule
-                self.schedule_index = old_schedule_index
-            if self.schedule_index >= len(self.schedule):
-                self.schedule_index = len(self.schedule) - 1
-            self.next_task_time = datetime.strptime(
-                self.schedule[self.schedule_index]["Time"], "%H:%M:%S"
-            )
+            # Deliberately do NOT touch the live scheduling state here. This runs
+            # in a daemon thread and `current_time` is a snapshot taken before a
+            # multi-minute LLM call, by which time the main loop has advanced.
+            # Hand the proposal over instead; the main loop commits it against
+            # its own up-to-date simulation time. Appending is the only shared
+            # write, and the main loop is the only reader/consumer.
+            self.pending_proposals.append(updated_schedule)
         else:
             print(
                 f"[INFO] {self.id} did not update the schedule at {current_time.strftime('%H:%M:%S')}."
             )
 
-        # check the next task in the schedule
+    def commit_proposal(self, proposal, current_time):
+        """Merge a replan proposal into the live schedule.
+
+        Only ever called from this member's own main loop, which is the single
+        writer of the scheduling state, so no locking is required. Entries that
+        have already been dispatched are kept as immutable history and
+        `schedule_index` never moves backwards, so nothing can be dispatched
+        twice.
+        """
+        proposal = purturbation_schedule(proposal)
+        executed = self.schedule[: self.schedule_index]
+        pending = [
+            task
+            for task in proposal
+            if datetime.strptime(task["Time"], "%H:%M:%S") > current_time
+        ]
+        if not pending:
+            print(
+                f"[INFO] {self.id} rejected a replan at {current_time.strftime('%H:%M:%S')}: "
+                f"nothing proposed after the current execution point."
+            )
+            return
+
+        self.schedule = executed + pending
+        # the execution boundary is unchanged by construction
+        self.schedule_index = len(executed)
+        print(
+            f"[INFO] {self.id} committed a replan at {current_time.strftime('%H:%M:%S')}: "
+            f"{len(executed)} dispatched, {len(pending)} pending."
+        )
+
+        # re-evaluate the next task against the *current* simulation time
         self.check_next_task(current_time)
 
+    def next_task_id(self):
+        # next() on an itertools.count is a single atomic C call, so the main
+        # loop and the reply thread can allocate concurrently without a lock
+        return next(self._task_id_seq)
+
     def execute_task(self, activity, current_time):
+        task_id = self.next_task_id()
         if "break" in activity:
             self.logout(datetime.now(), current_time)
             self.can_logout = False
@@ -439,7 +474,7 @@ class Member:
                         self.mbti,
                         self.personality,
                         self.logging_dir,
-                        self.execution_task_id,
+                        task_id,
                         self.temp_dir,
                     ),
                 )
@@ -449,12 +484,12 @@ class Member:
                 process = Process(
                     target=run_task_in_process,
                     args=(
-                        week,
-                        date,
+                        self.week,
+                        self.date,
                         activity,
                         self.id,
                         self.logging_dir,
-                        self.execution_task_id,
+                        task_id,
                         self.temp_dir,
                     ),
                 )
@@ -464,8 +499,7 @@ class Member:
             self.can_logout = True
 
         # log the task execution
-        self.schedule_logging(datetime.now(), current_time, activity)
-        self.execution_task_id += 1
+        self.schedule_logging(datetime.now(), current_time, activity, task_id)
 
         # move to the next task
         self.move_to_next_task(current_time)
@@ -520,7 +554,9 @@ class Member:
             # can logout or random browse
             next_task_interval = self.next_task_time - current_time
             if next_task_interval > timedelta(minutes=self.loaf_interval):  # (hours=1)
-                if random.random() < self.loaf_rate:
+                # NOTE: same orientation as move_to_next_task(): loaf_rate is the
+                # probability of loafing, so AFK is the `>` branch
+                if random.random() > self.loaf_rate:
                     # logout
                     if self.can_logout:
                         self.logout(datetime.now(), current_time)
@@ -576,6 +612,11 @@ class Member:
                 time.sleep(1)
                 continue
 
+            # commit replans handed over by reply threads, using this loop's own
+            # up-to-date simulation time rather than the thread's stale snapshot
+            while self.pending_proposals:
+                self.commit_proposal(self.pending_proposals.pop(0), current_time)
+
             if not self.no_more_task and current_time >= self.next_task_time:
                 activity = self.schedule[self.schedule_index]["Activity"]
                 self.execute_task(activity, current_time)
@@ -589,27 +630,42 @@ class Member:
                     pick the middle time to reply: from current_time to next_task_time
                     next_reply_time = time between current_time and next_task_time
                     """
+                    # clamp to a non-negative offset: a next task that is already
+                    # overdue must not schedule the reply in the past, which
+                    # would spawn a reply worker on every single iteration
                     self.next_reply_time = (
-                        current_time + (self.next_task_time - current_time) / 2
+                        current_time
+                        + max(self.next_task_time - current_time, timedelta(0)) / 2
                     )
                     # print(f"[DEBUG] reply time set for {self.id} is {self.next_reply_time}")
                     self.reply_lock = True
                 else:
-                    # check if the reply time is over
-                    if current_time >= self.next_reply_time:
+                    # check if the reply time is over; hold off while a previous
+                    # replan is still running so proposals cannot pile up
+                    if (
+                        current_time >= self.next_reply_time
+                        and not self.replan_in_flight
+                    ):
                         # login if not login_state
                         if not self.login_state:
                             self.login(datetime.now(), current_time)
                             self.can_logout = True
 
-                        # self.reply_email(current_time)
-                        t = Thread(target=self.reply_email, args=(current_time,))
+                        # dequeue *before* handing the email over, so the worker
+                        # cannot race with this pop and reply to the wrong email
+                        incom_email_data = self.waiting_communication.pop(0)
+                        self.replan_in_flight = True
+                        t = Thread(
+                            target=self.reply_email_worker,
+                            args=(
+                                incom_email_data,
+                                current_time,
+                            ),
+                        )
                         t.daemon = True
                         t.start()
 
-                        # remove the email from the waiting_communication
                         self.reply_lock = False
-                        self.waiting_communication.pop(0)
 
             time_step = timedelta(
                 seconds=config.sim_seconds
@@ -660,7 +716,7 @@ class Member:
                     ]
                 )
 
-    def schedule_logging(self, real_time, current_time, activity):
+    def schedule_logging(self, real_time, current_time, activity, task_id):
         log_file = os.path.join(self.root_log_dir, "final_schedule.csv")
         real_timestamp = real_time.strftime("%Y-%m-%d %H:%M:%S")
         sim_timestamp = current_time.strftime("%H:%M:%S")
@@ -683,7 +739,7 @@ class Member:
                 writer.writerow(
                     [
                         self.id,
-                        self.execution_task_id,
+                        task_id,
                         real_timestamp,
                         sim_timestamp,
                         self.name,

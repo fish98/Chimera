@@ -1,3 +1,8 @@
+# ========= Copyright (c) 2026 TTFISH. Licensed under the MIT License. =========
+# See the LICENSE file in the project root for the full license text.
+#
+# SPDX-License-Identifier: MIT
+# ==============================================================================
 CONTAINER_PID=$(docker inspect -f '{{.State.Pid}}' chimera)
 CONTAINER_ID=$(docker ps -a | grep chimera | awk '{print $1}')
 OUTPUT_DIR="/data/Logs"
