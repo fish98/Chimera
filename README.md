@@ -18,6 +18,12 @@ Chimera is a multi-agent LLM-driven simulation framework that automatically gene
 
 ---
 
+> **ChimeraLog Dataset Availability:** Following my graduation, access to my university OneDrive account has been affected, and the previous ChimeraLog download links are no longer accessible. I am currently looking for a new hosting solution.
+
+> In the meantime, we recommend running Chimera locally to generate the data you need and avoid transferring large volumes of data. If you specifically need access to the original ChimeraLog dataset, please contact me (jiongchiyu@gmail.com), and we can explore alternative ways to share. Thank you for your patience and understanding.`
+
+---
+
 ## Table of Contents
 
 - [Repository Structure](#repository-structure)
